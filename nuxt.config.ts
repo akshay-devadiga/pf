@@ -10,12 +10,9 @@ export default defineNuxtConfig({
   // Include Tailwind CSS module for styling.  This pulls in Tailwind at build
   // time and eliminates the need for injecting a CDN link.  It also reads
   // the CSS file defined below.
-  modules: ['@nuxtjs/tailwindcss'],
   // Import our Tailwind entrypoint so Nuxt can compile it.  If this file
   // doesn't exist yet it will be created in assets/css/tailwind.css.
-  // Use a root-relative file path string which Nuxt/Vite will resolve to the
-  // project's assets folder at runtime.
-  css: ['assets/css/tailwind.css'],
+  css: ['@/assets/css/tailwind.css'],
   // Use Nitro server routes and composables
   runtimeConfig: {
     // These secrets should be defined in your environment (e.g. .env file)
@@ -30,6 +27,19 @@ export default defineNuxtConfig({
       baseURL: process.env.PUBLIC_BASE_URL || 'http://localhost:3000'
     }
   },
+  // Nuxt compatibility date (recommended for Nitro/Vite behavior)
+  compatibility: {
+    date: '2025-12-18'
+  },
+
+  // PostCSS plugins configured via Nuxt options (preferred over a standalone postcss.config.js)
+  postcss: {
+    plugins: {
+      tailwindcss: {},
+      autoprefixer: {}
+    }
+  },
+
   // Optional: enable source maps in development for easier debugging
   sourcemap: {
     server: true,
