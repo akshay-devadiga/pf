@@ -40,6 +40,16 @@ export default defineNuxtConfig({
     }
   },
 
+  // Vite dev server configuration (allow our Cloudflare Tunnel host during local testing)
+  vite: {
+    server: {
+      // If Cloudflare Tunnel uses an ephemeral host like "*.trycloudflare.com",
+      // you can add one or more specific hostnames here. Use `allowedHosts: 'all'`
+      // only if you understand the security implications.
+      allowedHosts: ['dig-salmon-integration-holding.trycloudflare.com']
+    }
+  },
+
   // Optional: enable source maps in development for easier debugging
   sourcemap: {
     server: true,
