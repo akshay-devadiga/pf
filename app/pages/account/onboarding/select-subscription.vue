@@ -12,6 +12,10 @@
           :pricing-table-id="pricingTableId"
           :publishable-key="publishableKey"
         />
+        <div class="mt-4 text-center">
+          <button @click.prevent="checkSession()" class="px-4 py-2 rounded bg-gray-100">Check payment status</button>
+          <small class="block text-gray-500 mt-2">If the Stripe checkout embed doesn't redirect, click the button and paste the session id (cs_...)</small>
+        </div>
       </div>
     </ClientOnly>
   </section>
@@ -109,4 +113,24 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('message', handleMessage)
 })
+
+// Fallback: allow users or automated tests to check session status manually
+// This is useful when an embed doesn't redirect properly from Stripe's checkout
+// page. The helper will prompt for a session id if not supplied and will
+// redirect to `/dashboard` if the session is complete.
+const checkSession = async (sessionId?: string) => {
+  const id = sessionId || (window.prompt('Enter checkout session_id (e.g. cs_test_...)') || '').trim()
+  if (!id) return
+  try {
+    const res: any = await $fetch('/api/session-status', { method: 'GET', params: { session_id: id } })
+    if (res?.status === 'complete') {
+      router.push('/dashboard')
+    } else {
+      alert(`Payment status: ${res?.status || 'unknown'}`)
+    }
+  } catch (err) {
+    alert('Failed to fetch session status. Check console for details.')
+    console.error(err)
+  }
+}
 </script>
