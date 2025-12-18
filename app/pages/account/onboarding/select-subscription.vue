@@ -6,7 +6,9 @@
     <!-- ClientOnly ensures the pricing table renders only on the client side -->
     <ClientOnly>
       <div class="w-full">
+        <div v-if="error" class="text-center text-red-600 font-medium">{{ error }}</div>
         <stripe-pricing-table
+          v-else
           :pricing-table-id="pricingTableId"
           :publishable-key="publishableKey"
         />
@@ -26,23 +28,43 @@ const publishableKey = config.public.stripePublishableKey as string
 const pricingTableId = config.public.stripePricingTableId as string
 const router = useRouter()
 
-// Inject the Stripe Pricing Table script into the document head
-useHead({
-  script: [
-    {
-      src: 'https://js.stripe.com/v3/pricing-table.js',
-      defer: true
-    }
-  ]
-})
+// Inject the Stripe Pricing Table script into the document head if config is present
+if (!publishableKey || !pricingTableId) {
+  // Inform the developer immediately in the UI if required config is missing
+  error.value = 'Missing STRIPE_PUBLISHABLE_KEY or STRIPE_PRICING_TABLE_ID. Check `.env`.'
+} else {
+  useHead({
+    script: [
+      {
+        src: 'https://js.stripe.com/v3/pricing-table.js',
+        defer: true
+      }
+    ]
+  })
+}
 
 // Listen for postMessage events from the Stripe embed. When a checkout
 // completes the embed will often post a message; we handle common message
 // shapes and redirect the user to `/dashboard` on success. We also support
 // a fallback where the message contains a `session_id` — in that case we
 // verify the session via `/api/session-status` before redirecting.
+const error = ref<string | null>(null)
+
+// Listen for postMessage events from the Stripe embed. When a checkout
+// completes the embed will often post a message; we handle common message
+// shapes and redirect the user to `/dashboard` on success. We also support
+// a fallback where the message contains a `session_id` — in that case we
+// verify the session via `/api/session-status` before redirecting.
+//
+// See Stripe docs for Pricing Table embeds and common event shapes:
+// https://stripe.com/docs/payments/pricing-tables
 const handleMessage = async (event: any) => {
   if (!event?.data) return
+
+  // Only accept messages that originate from Stripe domains for security.
+  // Stripe embeds post messages from stripe.com subdomains (e.g. checkout.stripe.com).
+  if (typeof event.origin === 'string' && !event.origin.includes('stripe.com')) return
+
   const data = event.data
   // Debugging help when diagnosing embed behavior
   // console.debug('Stripe embed message', data)
