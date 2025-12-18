@@ -1,0 +1,23 @@
+{
+  "name": "onboarding-nuxt",
+  "version": "1.0.0",
+  "description": "Mock onboarding flow with Stripe embedded checkout",
+  "scripts": {
+    "dev": "dotenv -e .env -- nuxt dev",
+    "dev:local": "dotenv -e .env.local -- nuxt dev",
+    "build": "nuxt build",
+    "start": "nuxt start"
+  },
+  "dependencies": {
+    "@stripe/stripe-js": "^1.49.0",
+    "nuxt": "^4.0.0-rc.4",
+    "stripe": "^11.7.0"
+  },
+  "devDependencies": {
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "autoprefixer": "^10.4.23",
+    "dotenv-cli": "^11.0.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19"
+  }
+}
