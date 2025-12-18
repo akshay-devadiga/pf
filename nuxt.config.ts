@@ -13,7 +13,8 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss'],
   // Import our Tailwind entrypoint so Nuxt can compile it.  If this file
   // doesn't exist yet it will be created in assets/css/tailwind.css.
-  css: ['@/assets/css/tailwind.css'],
+  // Use the `~` alias which Nuxt/Vite resolves without requiring tsconfig path plugins.
+  css: ['~/assets/css/tailwind.css'],
   // Use Nitro server routes and composables
   runtimeConfig: {
     // These secrets should be defined in your environment (e.g. .env file)
